@@ -1,0 +1,28 @@
+body {
+  height:100%;
+}
+
+#daily-snapshot {
+  height:100%;
+}
+
+.loading-indicator {
+  width:100%;
+  height:100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+table.overview td {
+  text-align:center;
+
+  &.state-name {
+    text-align:left;
+  }
+
+  &.balance {
+    text-align:right;
+  }
+}
+
