@@ -3,6 +3,7 @@ import { compose, flatten, is } from 'ramda';
 
 export const titleize = compose(_titleize, humanize);
 export const money = (val) => `$${numberFormat(val)}`;
-export const percent = (val) => `${numberFormat(val*100)}%`;
+export const percent = (val) => `${numberFormat(val * 100)}%`;
 export const arrayOf = (val) => flatten([val]);
 export const execOrReturn = (valOrFunc, ...args) => is(Function, valOrFunc) ? valOrFunc(...args) : valOrFunc;
+export const round = (val) => Math.abs(val) === Infinity ? 0 : Math.round(val);

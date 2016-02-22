@@ -18,6 +18,9 @@ const aggSpec = {
     'ending_backlog',
     'balance'
   ],
+  max: ['max_days_in_backlog'],
+  average: ['avg_days_in_backlog'],
+
   groupBy: ['billing_state_key']
 };
 

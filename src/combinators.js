@@ -1,7 +1,8 @@
-import { prop, compose, merge, identity, whereEq, pick } from 'ramda';
+import { prop, compose, merge, identity, whereEq, pick, toPairs, append, values } from 'ramda';
 import { Observable } from 'rx';
 import { arrayOf } from './util';
 import dl from 'datalib';
+import aggTypes from './datalib-aggregations';
 
 export default Observable;
 
@@ -15,17 +16,39 @@ Observable.prototype.toMap = function (keyField, keyTransform = identity) {
   return this.reduce(reducer, {});
 };
 
+const extractAggs = compose(toPairs, pick(aggTypes));
+
+const mergeFieldSpec = (field, agg, prevSpec) =>
+  prevSpec ? {
+    name: prevSpec.name,
+    ops: append(agg, prevSpec.ops),
+    as: append(`${field}_${agg}`, prevSpec.as)
+  } : { name: field, ops: [agg], as: [field] };
+
+const aggSpecToFieldSpecs = (aggSpec) => {
+  const aggs = extractAggs(aggSpec);
+  const reducer = (specs, aggAndFields) => {
+    const [agg, fields] = aggAndFields;
+
+    fields.forEach(f => {
+      specs[f] = mergeFieldSpec(f, agg, specs[f]);
+    });
+    return specs;
+  };
+
+  return values(aggs.reduce(reducer, {}));
+};
+
 Observable.prototype.aggregate = function (aggSpec) {
-  const fieldSpec = (agg) => (name) => { return {name: name, ops: [agg], as: [name]}; };
   const groupBy = arrayOf(aggSpec.groupBy);
-  const spec = aggSpec.sum.map(fieldSpec('sum'));
+  const spec = aggSpecToFieldSpecs(aggSpec);
   const group = dl.groupby(...groupBy).stream(true).summarize(spec);
   const reducer = (g, rec) => {
     g.insert([rec]);
     return g;
   };
 
-  return this.reduce(reducer, group).map((g) => g.result()).tap(console.log.bind(console));
+  return this.reduce(reducer, group).map((g) => g.result());
 };
 
 Observable.prototype.whereEq = function (pattern) {

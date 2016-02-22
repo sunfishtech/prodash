@@ -1,5 +1,5 @@
 import { prop, compose } from 'ramda';
-import { titleize, money, percent, arrayOf, execOrReturn } from './util';
+import { titleize, money, percent, arrayOf, execOrReturn, round } from './util';
 import { h } from 'virtual-dom';
 
 const netChange = (metric) => (data) =>
@@ -40,31 +40,33 @@ const tr = (row) => {
     td(prop('ending_backlog')),
     td(netChange('backlog')),
     td(compose(percent, ratio('ending_backlog', 'ending_accounts'))),
-    td(),
-    td(),
+    td(compose(round, prop('avg_days_in_backlog'))),
+    td(compose(round, prop('max_days_in_backlog'))),
     td(compose(money, prop('balance')), {className: 'balance'})
   ];
 
   return h('tr', {}, cells.map(cell => cell(row)));
 };
 
-export default (rows) => h('table', {className: 'overview'}, [
-  h('thead', {}, [
-    th('Status', {style: 'text-align:left'}),
-    th('Starting Balance'),
-    th('Added'),
-    th('Completed'),
-    th('Ending Balance'),
-    th('Net Change'),
-    th('Starting Backlog'),
-    th('Added'),
-    th('Completed'),
-    th('Ending Backlog'),
-    th('Net Change'),
-    th('Backlog Pct'),
-    th('Avg Days in Backlog'),
-    th('Max Days in Backlog'),
-    th('Current Balance', {style: 'text-align:right'})
-  ]),
-  h('tbody', {}, rows.map(tr))
-]);
+export default (rows) => {
+  return h('table', {className: 'overview'}, [
+    h('thead', {}, [
+      th('Status', {style: 'text-align:left'}),
+      th('Starting Balance'),
+      th('Added'),
+      th('Completed'),
+      th('Ending Balance'),
+      th('Net Change'),
+      th('Starting Backlog'),
+      th('Added'),
+      th('Completed'),
+      th('Ending Backlog'),
+      th('Net Change'),
+      th('Backlog Pct'),
+      th('Avg Days in Backlog'),
+      th('Max Days in Backlog'),
+      th('Current Balance', {style: 'text-align:right'})
+    ]),
+    h('tbody', {}, rows.map(tr))
+  ]);
+};

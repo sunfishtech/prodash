@@ -1,0 +1,22 @@
+export default [
+  'values',
+  'count',
+  'valid',
+  'missing',
+  'distinct',
+  'sum',
+  'average',
+  'mean',
+  'variance',
+  'variancep',
+  'stdev',
+  'stdevp',
+  'median',
+  'q1',
+  'q3',
+  'modeskew',
+  'min',
+  'max',
+  'argmin',
+  'argmax'
+];
